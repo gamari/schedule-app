@@ -1,12 +1,15 @@
 "use client";
 
+import React from "react";
 import ScheduleApp from "@/components/ScheduleApp";
 import { Box } from "@chakra-ui/react";
 
-export default function Home() {
+const Index = () => {
   return (
     <Box>
       <ScheduleApp />
     </Box>
   );
-}
+};
+
+export default Index;
