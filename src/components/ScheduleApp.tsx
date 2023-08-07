@@ -34,10 +34,15 @@ const ScheduleApp = () => {
   const [endTime, setEndTime] = useState<string>("00:30");
 
   const handleSubmit = async () => {
+    const formatDate = (baseDate: Date, time: string) => {
+      const [hours, minutes] = time.split(":").map(Number);
+      return dayjs(baseDate).hour(hours).minute(minutes).toDate();
+    };
+
     try {
       await addDoc(collection(firestore, "schedules"), {
-        start: startTime,
-        end: endTime,
+        start: formatDate(date!, startTime),
+        end: formatDate(date!, endTime),
         date: dayjs(date).toISOString(),
         status: "pending",
       });

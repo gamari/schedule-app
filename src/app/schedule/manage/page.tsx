@@ -1,7 +1,8 @@
+import ScheduleForTeacher from "@/components/ScheduleForTeacher";
 import React from "react";
 
 const Index = () => {
-  return <div>Index</div>;
+  return <ScheduleForTeacher />;
 };
 
 export default Index;

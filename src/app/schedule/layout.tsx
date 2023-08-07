@@ -9,11 +9,9 @@ export default function ScheduleLayout({
   children: React.ReactNode;
 }) {
   return (
-    <Flex>
+    <Flex direction={"row"}>
       <Sidebar />
-      <Box flex="1" p="4">
-        {children}
-      </Box>
+      <Box p="4">{children}</Box>
     </Flex>
   );
 }

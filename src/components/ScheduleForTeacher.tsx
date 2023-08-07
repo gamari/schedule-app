@@ -1,48 +1,78 @@
 "use client";
 
-import { firestore } from "@/libs/firebase";
-import { VStack, Button, Box } from "@chakra-ui/react";
-import { getDocs, collection, doc, updateDoc } from "firebase/firestore";
-import React, { useEffect, useState } from "react";
+import {
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalCloseButton,
+  ModalBody,
+  useDisclosure,
+} from "@chakra-ui/react";
+import useCalendarEvents from "@/hooks/useCalendarEvents";
+import dayjs from "dayjs";
+import React, { useState } from "react";
+import { Calendar, dayjsLocalizer } from "react-big-calendar";
+import "react-big-calendar/lib/css/react-big-calendar.css";
+
+dayjs.locale("ja");
+
+const localizer = dayjsLocalizer(dayjs);
 
 export const ScheduleForTeacher = () => {
-  const [schedules, setSchedules] = useState<Schedule[]>([]);
+  const { events, loading } = useCalendarEvents();
+  const [selectedEvent, setSelectedEvent] = useState<Schedule>();
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
-  useEffect(() => {
-    const fetchSchedules = async () => {
-      const querySnapshot = await getDocs(collection(firestore, "schedules"));
-      const schedulesData = querySnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-
-      setSchedules(schedulesData);
-    };
-
-    fetchSchedules();
-  }, []);
-
-  const handleApprove = async (id: string) => {
-    try {
-      const scheduleRef = doc(firestore, "schedules", id);
-      await updateDoc(scheduleRef, { status: "approved" });
-      alert("スケジュールが承認されました!");
-      // ここで通知のロジックも追加できます
-    } catch (error) {
-      if (error instanceof Error) {
-        alert(error.message);
-      }
-    }
+  const handleEventSelect = (event: Schedule) => {
+    setSelectedEvent(event);
+    onOpen();
   };
 
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
   return (
-    <VStack spacing={4}>
-      {schedules.map((schedule: Schedule) => (
-        <Box key={schedule?.id}>
-          <Box>{schedule?.date}</Box>
-          <Button onClick={() => handleApprove(schedule?.id)}>承認</Button>
-        </Box>
-      ))}
-    </VStack>
+    <div style={{ height: 600, width: "100%" }}>
+      <Calendar
+        localizer={localizer}
+        events={events}
+        startAccessor="start"
+        endAccessor="end"
+        style={{ height: 500 }}
+        views={["month"]}
+        defaultView="month"
+        onSelectEvent={handleEventSelect}
+      />
+
+      {/* Event Details Modal */}
+      <Modal isOpen={isOpen} onClose={onClose} size="xl">
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>イベント詳細</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            {selectedEvent && (
+              <>
+                <p>
+                  <strong>タイトル:</strong> {selectedEvent.title}
+                </p>
+                <p>
+                  <strong>開始時間:</strong>{" "}
+                  {dayjs(selectedEvent.start).format("YYYY/MM/DD HH:mm")}
+                </p>
+                <p>
+                  <strong>終了時間:</strong>{" "}
+                  {dayjs(selectedEvent.end).format("YYYY/MM/DD HH:mm")}
+                </p>
+              </>
+            )}
+          </ModalBody>
+        </ModalContent>
+      </Modal>
+    </div>
   );
 };
+
+export default ScheduleForTeacher;

@@ -1,18 +1,34 @@
 "use client";
 
-import { Box, Link, VStack } from "@chakra-ui/react";
+import { AiOutlineCalendar } from "react-icons/ai";
+import { Box, HStack, Link, VStack } from "@chakra-ui/react";
 import { useRouter } from "next/navigation";
 
 const Sidebar = () => {
   const router = useRouter();
 
   return (
-    <Box width="200px" height="100vh" bg="gray.700" color="white" p="4">
+    <VStack
+      width="200px"
+      height="100vh"
+      bg="gray.700"
+      color="white"
+      p="4"
+      flex={"none"}
+    >
       <VStack align="start" spacing={4}>
-        <Link onClick={() => router.push("/")}>ホーム</Link>
-        <Link onClick={() => router.push("/about")}>アバウト</Link>
+        <HStack
+          style={{
+            fontSize: "1.5rem",
+            borderBottom: "1px solid #fff",
+          }}
+        >
+          <AiOutlineCalendar size={20} />
+          <span>予約ページ</span>
+        </HStack>
+        <Link onClick={() => router.push("/about")}></Link>
       </VStack>
-    </Box>
+    </VStack>
   );
 };
 
